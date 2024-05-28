@@ -1,0 +1,338 @@
+jamesdanielmarrsritchey: ```#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <sstream>
+
+std::string getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return std::string(*itr);
+    }
+    return "";
+}
+
+int main(int argc, char* argv[]) {
+    std::vector<std::string> args(argv, argv + argc);
+    std::string decimal = getCmdOption(argv, argv + argc, "--decimal");
+    std::string delimiter = getCmdOption(argv, argv + argc, "--delimiter");
+
+    if (delimiter.empty()) {
+        delimiter = " "; // default delimiter is space
+    }
+
+    if (!decimal.empty()) {
+        size_t pos = 0;
+        std::string token;
+        while ((pos = decimal.find(delimiter)) != std::string::npos) {
+            token = decimal.substr(0, pos);
+            std::cout << static_cast<char>(std::stoi(token));
+            decimal.erase(0, pos + delimiter.length());
+        }
+        std::cout << static_cast<char>(std::stoi(decimal));
+        std::cout << std::endl;
+    } else {
+        std::cout << "No decimal representation was given." << std::endl;
+    }
+
+    return 0;
+}
+
+GitHub Copilot: This C++ program is a command-line utility that takes a string of decimal numbers (separated by a specified delimiter) and converts each decimal number to its corresponding ASCII character.
+
+Here's a step-by-step explanation of how the code works:
+
+1. The `getCmdOption` function is a helper function that searches for a specific command-line option and returns its value. If the option is not found, it returns an empty string.
+
+2. In the `main` function, the command-line arguments are first converted into a vector of strings for easier manipulation.
+
+3. The `--decimal` and `--delimiter` options are extracted from the command-line arguments using the `getCmdOption` function.
+
+4. If no delimiter is specified, a space is used as the default delimiter.
+
+5. If a decimal representation is provided, the program enters a loop where it continually finds the next delimiter in the string, extracts the decimal number before the delimiter, converts it to an integer, and then converts that integer to a char (which is outputted). This process continues until there are no more delimiters in the string.
+
+6. If no decimal representation is provided, the program outputs a message indicating this.
+
+7. The program then ends with a return code of 0, indicating successful execution.
+
+Here's an example of how you might use this program:
+
+```bash
+./program --decimal "72 101 108 108 111" --delimiter " "
+```
+
+This would output:
+
+```bash
+Hello
+```
+
+jamesdanielmarrsritchey: Modify this code so that instead of passing a string of decimal, it comes from stdin.
+
+GitHub Copilot: Sure, here's how you can modify the code to read the decimal representation from standard input (stdin) instead of from a command-line argument:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <sstream>
+
+std::string getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return std::string(*itr);
+    }
+    return "";
+}
+
+int main(int argc, char* argv[]) {
+    std::vector<std::string> args(argv, argv + argc);
+    std::string delimiter = getCmdOption(argv, argv + argc, "--delimiter");
+
+    if (delimiter.empty()) {
+        delimiter = " "; // default delimiter is space
+    }
+
+    std::string decimal;
+    std::getline(std::cin, decimal);
+
+    if (!decimal.empty()) {
+        size_t pos = 0;
+        std::string token;
+        while ((pos = decimal.find(delimiter)) != std::string::npos) {
+            token = decimal.substr(0, pos);
+            std::cout << static_cast<char>(std::stoi(token));
+            decimal.erase(0, pos + delimiter.length());
+        }
+        std::cout << static_cast<char>(std::stoi(decimal));
+        std::cout << std::endl;
+    } else {
+        std::cout << "No decimal representation was given." << std::endl;
+    }
+
+    return 0;
+}
+```
+
+In this modified version, the `std::getline(std::cin, decimal);` line reads a line of input from stdin into the `decimal` string. The rest of the program remains the same.
+
+jamesdanielmarrsritchey: It should read all of stdin, not just a line.
+
+GitHub Copilot: To read all of stdin, you can use the `std::istreambuf_iterator` class from the `<iterator>` library. Here's how you can modify the code:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <sstream>
+#include <iterator>
+
+std::string getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return std::string(*itr);
+    }
+    return "";
+}
+
+int main(int argc, char* argv[]) {
+    std::vector<std::string> args(argv, argv + argc);
+    std::string delimiter = getCmdOption(argv, argv + argc, "--delimiter");
+
+    if (delimiter.empty()) {
+        delimiter = " "; // default delimiter is space
+    }
+
+    std::string decimal(std::istreambuf_iterator<char>(std::cin), {});
+
+    if (!decimal.empty()) {
+        size_t pos = 0;
+        std::string token;
+        while ((pos = decimal.find(delimiter)) != std::string::npos) {
+            token = decimal.substr(0, pos);
+            std::cout << static_cast<char>(std::stoi(token));
+            decimal.erase(0, pos + delimiter.length());
+        }
+        std::cout << static_cast<char>(std::stoi(decimal));
+        std::cout << std::endl;
+    } else {
+        std::cout << "No decimal representation was given." << std::endl;
+    }
+
+    return 0;
+}
+```
+
+In this modified version, the `std::string decimal(std::istreambuf_iterator<char>(std::cin), {});` line reads all of stdin into the `decimal` string. The rest of the program remains the same.
+
+jamesdanielmarrsritchey: Add a comment to the bottom which says how to compile the program, and install it on Debian.
+
+GitHub Copilot: Sure, here's how you can add a comment at the end of the file with instructions on how to compile the program and install it on Debian:
+
+```cpp
+// To compile this program, you can use the g++ compiler. Here's the command:
+// g++ -o program source.cpp
+//
+// This will compile the source.cpp file and create an executable named 'program'.
+//
+// If you don't have the g++ compiler installed, you can install it on Debian with the following command:
+// sudo apt-get install build-essential
+//
+// The 'build-essential' package includes the g++ compiler along with other tools necessary for building software.
+```
+
+This comment provides instructions on how to compile the program using the g++ compiler, and how to install the g++ compiler on Debian if it's not already installed.
+
+jamesdanielmarrsritchey: Use /* */ style comment.
+
+GitHub Copilot: Sure, here's how you can add a comment at the end of the file with instructions on how to compile the program and install it on Debian using the `/* */` style comment:
+
+```cpp
+/*
+To compile this program, you can use the g++ compiler. Here's the command:
+g++ -o program source.cpp
+
+This will compile the source.cpp file and create an executable named 'program'.
+
+If you don't have the g++ compiler installed, you can install it on Debian with the following command:
+sudo apt-get install build-essential
+
+The 'build-essential' package includes the g++ compiler along with other tools necessary for building software.
+*/
+```
+
+This comment provides instructions on how to compile the program using the g++ compiler, and how to install the g++ compiler on Debian if it's not already installed.
+
+jamesdanielmarrsritchey: Add this comment to the full program code.
+
+GitHub Copilot: Sure, here's the full program code with the added comment:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <sstream>
+#include <iterator>
+
+std::string getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return std::string(*itr);
+    }
+    return "";
+}
+
+int main(int argc, char* argv[]) {
+    std::vector<std::string> args(argv, argv + argc);
+    std::string delimiter = getCmdOption(argv, argv + argc, "--delimiter");
+
+    if (delimiter.empty()) {
+        delimiter = " "; // default delimiter is space
+    }
+
+    std::string decimal(std::istreambuf_iterator<char>(std::cin), {});
+
+    if (!decimal.empty()) {
+        size_t pos = 0;
+        std::string token;
+        while ((pos = decimal.find(delimiter)) != std::string::npos) {
+            token = decimal.substr(0, pos);
+            std::cout << static_cast<char>(std::stoi(token));
+            decimal.erase(0, pos + delimiter.length());
+        }
+        std::cout << static_cast<char>(std::stoi(decimal));
+        std::cout << std::endl;
+    } else {
+        std::cout << "No decimal representation was given." << std::endl;
+    }
+
+    return 0;
+}
+
+/*
+To compile this program, you can use the g++ compiler. Here's the command:
+g++ -o program source.cpp
+
+This will compile the source.cpp file and create an executable named 'program'.
+
+If you don't have the g++ compiler installed, you can install it on Debian with the following command:
+sudo apt-get install build-essential
+
+The 'build-essential' package includes the g++ compiler along with other tools necessary for building software.
+*/
+```
+
+jamesdanielmarrsritchey: When returning the decoded text, don't add a line ending.
+
+GitHub Copilot: Sure, you can remove the line ending by deleting the `std::cout << std::endl;` line. Here's the modified code:
+
+```cpp
+#include <iostream>
+#include <vector>
+#include <string>
+#include <algorithm>
+#include <sstream>
+#include <iterator>
+
+std::string getCmdOption(char ** begin, char ** end, const std::string & option)
+{
+    char ** itr = std::find(begin, end, option);
+    if (itr != end && ++itr != end)
+    {
+        return std::string(*itr);
+    }
+    return "";
+}
+
+int main(int argc, char* argv[]) {
+    std::vector<std::string> args(argv, argv + argc);
+    std::string delimiter = getCmdOption(argv, argv + argc, "--delimiter");
+
+    if (delimiter.empty()) {
+        delimiter = " "; // default delimiter is space
+    }
+
+    std::string decimal(std::istreambuf_iterator<char>(std::cin), {});
+
+    if (!decimal.empty()) {
+        size_t pos = 0;
+        std::string token;
+        while ((pos = decimal.find(delimiter)) != std::string::npos) {
+            token = decimal.substr(0, pos);
+            std::cout << static_cast<char>(std::stoi(token));
+            decimal.erase(0, pos + delimiter.length());
+        }
+        std::cout << static_cast<char>(std::stoi(decimal));
+    } else {
+        std::cout << "No decimal representation was given." << std::endl;
+    }
+
+    return 0;
+}
+
+/*
+To compile this program, you can use the g++ compiler. Here's the command:
+g++ -o program source.cpp
+
+This will compile the source.cpp file and create an executable named 'program'.
+
+If you don't have the g++ compiler installed, you can install it on Debian with the following command:
+sudo apt-get install build-essential
+
+The 'build-essential' package includes the g++ compiler along with other tools necessary for building software.
+*/
+```
+
+In this modified version, the decoded text will not have a line ending.
